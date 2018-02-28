@@ -1,10 +1,12 @@
-package de.codecentric.kafka.demo.producer;
+package de.codecentric.kafka.demo.avro.producer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import de.codecentric.kafka.demo.avro.User;
 
@@ -18,8 +20,13 @@ public class AvroProducer {
 	@Autowired
 	private KafkaTemplate<String, User> kafkaTemplate;
 
-	public void send(User user) {
+	public ListenableFuture<SendResult<String, User>> send(User user) {
 		LOGGER.info("sending user='{}'", user.toString());
-		kafkaTemplate.send(avroTopic, user);
+		return kafkaTemplate.send(avroTopic, user);
+	}
+	
+	public ListenableFuture<SendResult<String, User>> send(String key, User user, String topic) {
+		LOGGER.info("sending user='{}' with key={} to {}", user.toString(), key, topic);
+		return kafkaTemplate.send(topic, key, user);
 	}
 }

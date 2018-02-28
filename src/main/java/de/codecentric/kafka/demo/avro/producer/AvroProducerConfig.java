@@ -1,4 +1,4 @@
-package de.codecentric.kafka.demo.producer;
+package de.codecentric.kafka.demo.avro.producer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,11 @@ public class AvroProducerConfig {
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Objects.requireNonNull(bootstrapServers,"No bootsrap servers"));
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+		props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
+		props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 3000);
+		//retries == 0
 		props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemRegistryUrl);
+		props.put("metric.reporters", HealthReporter.class.getName());
 		return props;
 	}
 

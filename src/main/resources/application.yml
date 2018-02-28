@@ -1,2 +1,5 @@
 kafka:
   bootstrap-servers: localhost:9092
+  topic:
+    avro: avromessages
+  schemaregistry-url: http://localhost:8081

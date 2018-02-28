@@ -1,32 +1,29 @@
-package de.codecentric.kafka.demo.test;
+package de.codecentric.kafka.demo.avro.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.kafka.common.protocol.SecurityProtocol;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.codecentric.kafka.demo.avro.User;
-import de.codecentric.kafka.demo.consumer.AvroConsumer;
+import de.codecentric.kafka.demo.avro.consumer.AvroConsumer;
+import de.codecentric.kafka.demo.avro.producer.AvroProducer;
 import de.codecentric.kafka.demo.embeddedkafka.ContainerTestUtils;
 import de.codecentric.kafka.demo.embeddedkafka.EmbeddedSingleNodeKafkaCluster;
-import de.codecentric.kafka.demo.producer.AvroProducer;
-import io.confluent.kafka.schemaregistry.avro.AvroCompatibilityLevel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class KafkaDemoApplicationTests {
+public class KafkaAvroDemoTests {
 	
 	@Autowired
 	private AvroProducer producer;
@@ -37,15 +34,24 @@ public class KafkaDemoApplicationTests {
 	@Autowired
 	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 	
-	private EmbeddedSingleNodeKafkaCluster kafka = new EmbeddedSingleNodeKafkaCluster();
+	private static EmbeddedSingleNodeKafkaCluster kafka = new EmbeddedSingleNodeKafkaCluster();
 
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		kafka.start();
+		kafka.createTopic("avromessages", 1, 1);
+		kafka.createTopic("topic1", 1, 1);
+		kafka.createTopic("topic2", 1, 1);
+		kafka.createTopic("topic3", 1, 1);
+	}
+	
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+		kafka.stop();
+	}
+	
 	@Before
-	public void setUp() throws Exception {
-
-		kafka.start();		
-		
-		//Thread.sleep(20000);
-		
+	public void setUp() throws Exception {		
 		// wait until the partitions are assigned
 		for (MessageListenerContainer messageListenerContainer : kafkaListenerEndpointRegistry
 				.getListenerContainers()) {
@@ -54,12 +60,6 @@ public class KafkaDemoApplicationTests {
 		}
 	}
 	
-	@After
-	public void tearDown() {
-		System.out.println("SHUTDOWN");
-		kafka.stop();
-	}
-
 	@Test
 	public void testReceive() throws Exception {
 		
@@ -68,6 +68,8 @@ public class KafkaDemoApplicationTests {
 
 		consumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
 		assertThat(consumer.getLatch().getCount()).isEqualTo(0);
+		
+		Thread.sleep(10000);
 	}
 
 }

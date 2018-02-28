@@ -1,6 +1,5 @@
 package de.codecentric.kafka.demo.embeddedkafka;
 
-import org.apache.curator.test.InstanceSpec;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -11,6 +11,9 @@ public class Main {
 			System.out.println("Zookeeper servers: "+kafka.zookeeperConnect());
 			System.out.println("Schema registry server: "+kafka.schemaRegistryUrl());
 			kafka.createTopic("avromessages", 1, 1);
+			kafka.createTopic("topic1", 1, 1);
+			kafka.createTopic("topic2", 1, 1);
+			kafka.createTopic("topic3", 1, 1);
 		} catch (Exception e) {
 			e.printStackTrace();
 			kafka.stop();
